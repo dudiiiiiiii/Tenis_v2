@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+    <form method="POST" action="" enctype="multipart/form-data">
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4 account-heading">Tournament Details</legend>
+                <div class="form-group">
+                    <h5>Tournament Id</h5>
+                    {{ tournament.id}}
+                </div>
+                <div class="form-group">
+                    <h5>Date_from</h5>
+                    {{ tournament.date_from}}
+                </div>
+                <div class="form-group">
+                    <h5>Club Id</h5>
+                    {{ tournament.club_id}}
+                </div>
+                <div class="form-group">
+                    <h5>Organizer Id</h5>
+                    {{ tournament.organizer_id}}
+                </div>
+                <div class="form-group">
+                    <h5>Max Players</h5>
+                    {{ tournament.max_players}}
+                </div>
+                <div class="form-group">
+                    <h5>Rewards</h5>
+                    {{ tournament.winner_rewards}}
+                </div>
+                <div class="form-group">
+                    <h5>Min skill lvl</h5>
+                    {{ tournament.min_skill_lvl}}
+                </div>
+                <div class="form-group">
+                    <h5>Registration closed</h5>
+                    {{ tournament.is_registration_closed}}
+                </div>
+
+            </fieldset>
+    </form>
+
+{% endblock content %}

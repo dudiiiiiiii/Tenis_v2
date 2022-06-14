@@ -88,8 +88,9 @@ class UpdateAccount(FlaskForm):
 
 class FilterReservations(FlaskForm):
     date = DateField('Date', format="%Y-%m-%d", validators=[DataRequired()])
+    club_id = StringField('Club id', validators=[DataRequired()])
     court_number = IntegerField('Court number', validators=[DataRequired()])
-    submit = SubmitField('Update')
+    filter = SubmitField('Filter')
 
     def validate_date(self, birth_date):
         if birth_date.data < date.today():
@@ -98,10 +99,11 @@ class FilterReservations(FlaskForm):
 
 class MakeReservation(FlaskForm):
     date = DateField('Date', format="%Y-%m-%d", validators=[DataRequired()])
+    club_id = StringField('Club id', validators=[DataRequired()])
     court_number = IntegerField('Court number', validators=[DataRequired()])
     hour_from = IntegerField('Hour from', validators=[DataRequired()])
     hour_to = IntegerField('Hour to', validators=[DataRequired()])
-    submit = SubmitField('Update')
+    submit = SubmitField('Reserve')
 
     def validate_date(self, birth_date):
         if birth_date.data < date.today():
@@ -109,7 +111,7 @@ class MakeReservation(FlaskForm):
 
 
 class TournamentForm(FlaskForm):
-    date_from = DateField('Date', format="%Y-%m-%d", validators=[DataRequired()])
+    date = DateField('Date', format="%Y-%m-%d", validators=[DataRequired()])
     club_id = IntegerField('Club id', validators=[DataRequired()])
     max_players = IntegerField('Max number of players', validators=[DataRequired()])
     winner_rewards = StringField('Rewards', validators=[Length(min=2, max=30)])

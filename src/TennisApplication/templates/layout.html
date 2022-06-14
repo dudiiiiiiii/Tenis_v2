@@ -26,7 +26,7 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+<!--              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>-->
               <a class="nav-item nav-link" href="{{ url_for('reservation') }}">Reservation</a>
               <a class="nav-item nav-link" href="{{ url_for('tournament') }}">Tournament</a>
             </div>
@@ -58,17 +58,29 @@
           {% endwith %}
           {% block content %} {% endblock %}
         </div>
-        <div class="col-md-4">
-          <div class="content-section">
-            <h3>Player Info</h3>
-            <p class='text-muted'>Account sidebar.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Matches</li>
-                <li class="list-group-item list-group-item-light">Reservations</li>
-              </ul>
-            </p>
-          </div>
-        </div>
+        {% if current_user.is_authenticated %}
+            <div class="col-md-4">
+              <div class="content-section">
+                <h3>Player Info</h3>
+                <p class='text-muted'>Account sidebar.
+                  <ul class="list-group">
+                    <li class="list-group-item list-group-item-light">Latest Matches</li>
+                    <li class="list-group-item list-group-item-light">Reservations</li>
+                  </ul>
+                </p>
+              </div>
+            </div>
+        {% else %}
+          <div class="col-md-4">
+              <div class="content-section">
+                <h3>Contact us</h3>
+                  <ul class="list-group">
+                    <li class="list-group-item list-group-item-light">+48 123456789</li>
+                    <li class="list-group-item list-group-item-light">tennis@mail.com</li>
+                  </ul>
+              </div>
+            </div>
+        {% endif %}
       </div>
     </main>
 

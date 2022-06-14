@@ -12,12 +12,13 @@
           <th scope="col">Id</th>
           <th scope="col">Club Id</th>
           <th scope="col">Max Players</th>
+            <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         {% for tournament in tournaments %}
 <!--            <tr class="bg-danger"> <th scope="row">1</th> <th scope="row">{{hour}}</th> <th scope="row">taken</th> </tr>-->
-            <tr> </th> <th scope="row">{{tournament[0]}}</th> <th scope="row">{{tournament[1]}}</th> <th scope="row">{{tournament[2]}}</th></tr>
+        <tr> </th> <th scope="row">{{tournament[0]}}</th> <th scope="row">{{tournament[1]}}</th> <th scope="row">{{tournament[2]}}</th><th scope="row"><a href="{{ url_for('tournament_details', id_t=tournament[0]) }}">details</a></th></tr>
 
         {% endfor %}
       </tbody>

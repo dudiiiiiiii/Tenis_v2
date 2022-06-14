@@ -1,24 +1,163 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Reservation</h1>
-    <table class="table">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col">Court Number</th>
-          <th scope="col">Hour</th>
-          <th scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for hour in range(8, 23) %}
-          {% if hour in reservations %}
-<!--            <tr class="bg-danger"> <th scope="row">1</th> <th scope="row">{{hour}}</th> <th scope="row">taken</th> </tr>-->
-            <tr class="bg-danger"> </th> <th scope="row">{{hour}}</th> <th scope="row">taken</th> </tr>
-          {% else %}
-<!--            <tr class="bg-success"><th scope="row">1</th> <th scope="row">{{hour}}</th> <th scope="row">free</th> </tr>-->
-            <tr class="bg-success"> </th> <th scope="row">{{hour}}</th> <th scope="row">free</th> </tr>
-          {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+<!--    <h1>Reservation</h1>-->
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Filter For Reservation</legend>
+                <div class="form-group">
+                    {{ form.date.label(class="form-control-label") }}
+                    {% if form.date.errors %}
+                        {{ form.date(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.date(class="form-control form-control-lg datepicker") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.club_id.label(class="form-control-label") }}
+                    {% if form.club_id.errors %}
+                        {{ form.club_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.club_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.club_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.court_number.label(class="form-control-label") }}
+                    {% if form.court_number.errors %}
+                        {{ form.court_number(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.court_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.court_number(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.filter(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+
+    {% if show %}
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Club Id</th>
+              <th scope="col">Court Number</th>
+              <th scope="col">Hour</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for hour in range(8, 23) %}
+              {% if hour in reservations %}
+                <tr class="bg-danger">
+                    <th> {{club_id}} </th>
+                    <th> {{court_number}} </th>
+                    <th scope="row">{{hour}} </th>
+                    <th scope="row">taken </th>
+                </tr>
+              {% else %}
+                <tr class="bg-success">
+                    <th> {{club_id}} </th>
+                    <th> {{court_number}} </th>
+                    <th scope="row">{{hour}}</th>
+                    <th scope="row">free</th>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="">
+            {{ reserve.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Reserve</legend>
+                <div class="form-group">
+                    {{ reserve.date.label(class="form-control-label") }}
+                    {% if reserve.date.errors %}
+                        {{ reserve.date(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in reserve.date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ reserve.date(class="form-control form-control-lg datepicker") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ reserve.club_id.label(class="form-control-label") }}
+                    {% if reserve.club_id.errors %}
+                        {{ reserve.club_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in reserve.club_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ reserve.club_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ reserve.court_number.label(class="form-control-label") }}
+                    {% if reserve.court_number.errors %}
+                        {{ reserve.court_number(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in reserve.court_number.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ reserve.court_number(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ reserve.hour_from.label(class="form-control-label") }}
+                    {% if reserve.hour_from.errors %}
+                        {{ reserve.hour_from(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in reserve.hour_from.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ reserve.hour_from(class="form-control form-control-lg datepicker") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ reserve.hour_to.label(class="form-control-label") }}
+                    {% if reserve.hour_to.errors %}
+                        {{ reserve.hour_to(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in reserve.hour_to.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ reserve.hour_to(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ reserve.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+        {% endif %}
+    {% endif %}
 {% endblock content %}

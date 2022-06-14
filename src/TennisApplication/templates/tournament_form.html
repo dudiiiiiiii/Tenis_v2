@@ -19,16 +19,16 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.date_from.label(class="form-control-label") }}
-                    {% if form.date_from.errors %}
-                        {{ form.date_from(class="form-control form-control-lg is-invalid") }}
+                    {{ form.date.label(class="form-control-label") }}
+                    {% if form.date.errors %}
+                        {{ form.date(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.date_from.errors %}
+                            {% for error in form.date.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.date_from(class="form-control form-control-lg datepicker") }}
+                        {{ form.date(class="form-control form-control-lg datepicker") }}
                     {% endif %}
                 </div>
 

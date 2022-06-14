@@ -1,17 +1,24 @@
 import os
 import secrets
+from datetime import datetime, time
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
-from src.TennisApplication.forms import RegistrationForm, LoginForm, UpdateAccount,TournamentForm
+from src.TennisApplication.forms import *
 from src.TennisApplication import app, db, bcrypt
-from src.TennisApplication.models import User, Tournament
+from src.TennisApplication.models import User, Tournament, Club, Reservation, Court
 from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy import and_
 
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html')
+    def get_club_names():
+        club_name_rows = Club.query.with_entities(Club.name).all()
+        club_names = [row[0] for row in club_name_rows]
+        return club_names
+    club_names = get_club_names()
+    return render_template('home.html', club_names=club_names)
 
 
 @app.route("/about")
@@ -106,13 +113,63 @@ def account():
 
 @app.route("/reservation", methods=['GET', 'POST'])
 def reservation():
-    reservations = (14, 17, 20)
-    return render_template('reservation.html', title='Reservation', reservations=reservations)
+
+    def get_court(club_id, court_number):
+        court = Court.query.filter(Court.club_id == club_id and Court.court_number == court_number).first()
+        return court
+
+    def get_reservations(date, court):
+        reservations = Reservation.query.filter(and_(Reservation.date_from >= date),
+                                                Reservation.court_id == court.id).all()
+        reservation_list = [list(range(reservation.date_from.hour, reservation.date_to.hour))
+                            for reservation in reservations]
+        flatten_list = [hours for reservation in reservation_list for hours in reservation]
+        return flatten_list
+
+    form = FilterReservations()
+    reserve = MakeReservation()
+    if request.method == 'GET':
+        show = False
+        reservations = ()
+        club_id, date, court_number = None, None, None
+    elif request.form.get('filter'):
+        show = True
+        date = form.date.data
+        court_number = form.court_number.data
+        club_id = form.club_id.data
+        court = get_court(club_id, court_number)
+        reservations = get_reservations(date, court)
+    elif request.form.get('submit'):
+        show = True
+        date = reserve.date.data
+        court_number = reserve.court_number.data
+        club_id = reserve.club_id.data
+        court = get_court(club_id, court_number)
+        reservations = get_reservations(date, court)
+        available_hours = [hour not in reservations for hour in range(reserve.hour_from.data, reserve.hour_to.data)]
+        if False not in available_hours:
+            date_from = datetime.combine(reserve.date.data, time(reserve.hour_from.data))
+            date_to = datetime.combine(reserve.date.data, time(reserve.hour_to.data))
+            new_reservation = Reservation(user_id=current_user.id, court_id=court.id, date_from=date_from,
+                                          date_to=date_to)
+            db.session.add(new_reservation)
+            db.session.commit()
+            flash('You committed reservation succesfully', 'success')
+            redirect(url_for('home'))
+        else:
+            flash('Unable to commit reservation', 'danger')
+    return render_template('reservation.html', title='Reservation', reservations=reservations, form=form, show=show,
+                           club_id=club_id, court_number=court_number, reserve=reserve)
+
 
 @app.route("/tournament", methods=['GET', 'POST'])
 def tournament():
-    tournaments = [(1, 12, 16), (2, 345, 123)]
-    return render_template('tournament.html', title='Tournament', tournaments = tournaments)
+    tournaments1 = db.session.query(Tournament).all()
+    tournaments = []
+    for tournament in tournaments1:
+        tournaments.append((tournament.id, tournament.club_id, tournament.max_players))
+    return render_template('tournament.html', title='Tournament', tournaments=tournaments)
+
 
 @app.route("/tournament_form", methods=['GET', 'POST'])
 def tournament_form():
@@ -120,7 +177,7 @@ def tournament_form():
         return redirect(url_for('home'))
     form = TournamentForm()
     if form.validate_on_submit():
-        tournament12 = Tournament(date_from=form.date_from.data, club_id=form.club_id.data,
+        tournament12 = Tournament(date_from=form.date.data, club_id=form.club_id.data,
                                   organizer_id=current_user.get_id(), winner_rewards=form.winner_rewards.data,
                                   min_skill_lvl=form.min_skill_lvl.data, max_players=form.max_players.data,
                                   is_registration_closed=False)
@@ -130,5 +187,21 @@ def tournament_form():
         flash('tournament added', 'success')
         return redirect(url_for('tournament'))
     return render_template('tournament_form.html', title='Tournament_form', form=form)
+
+@app.route("/tournament_details/<id_t>", methods=['GET', 'POST'])
+def tournament_details(id_t):
+    tournaments1 = db.session.query(Tournament).all()
+    tournament= tournaments1[int(id_t)-1]
+    print(tournament)
+    # tournament = None
+    # for tournament2 in tournaments1:
+    #     if tournament2.id == id_t:
+    #         print("hi")
+    #         tournament = tournament2
+    #         break
+    #
+    # print(tournament)
+
+    return render_template('tournament_details.html', title='Tournament_details', tournament=tournament)
 
 
